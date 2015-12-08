@@ -112,4 +112,31 @@ class PopulationController extends \yii\web\Controller
         ]);
     }
 
+    public function actionDuplicate(){
+        $sql = "SELECT
+p.CID as 'เลขประชาชน',GROUP_CONCAT(p.NAME) as 'ชื่อ', GROUP_CONCAT(p.LNAME) as 'สกุล', GROUP_CONCAT(p.TYPEAREA) as 'ประเภทพักอาศัย',GROUP_CONCAT(p.pid) as 'เลขประจำตัวฐานHISของท่าน',
+GROUP_CONCAT(p.birth) as 'วันเกิด',
+GROUP_CONCAT(p.HOSPCODE) as 'รหัสหน่วยบริการที่ซ้ำซ้อนเป้าหมายคนไทย'
+FROM person p
+WHERE LENGTH(p.CID) = 13 and p.typearea in ('1','3')
+AND p.NATION = '099' and p.discharge='9' and p.cid not like '0%' 
+GROUP BY p.CID
+HAVING COUNT(p.CID)>1
+order by p.hospcode;";
+        try{
+            $rawData = \yii::$app->db->createCommand($sql)->queryAll();
+        } catch(\yii\db\Exception $e){
+            throw new E\yii\web\ConflictHttpException('sql error');
+        }
+        $dataProvider = new \yii\data\ArrayDataProvider([
+            'allModels' => $rawData,
+            'pagination' => false
+        ]);
+
+        return $this->render('duplicate',[
+            'dataProvider' => $dataProvider,
+            'rawData' => $rawData
+        ]);
+    }
+
 }

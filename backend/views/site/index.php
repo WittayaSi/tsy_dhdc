@@ -2,6 +2,7 @@
 /* @var $this yii\web\View */
 
 $this->title = 'My Yii Application';
+
 use backend\models\SysCheckProcess;
 use backend\models\SysProcessRunning;
 ?>
@@ -17,9 +18,9 @@ use backend\models\SysProcessRunning;
             <img src="images/Processing.gif">
         </div>
 
-        <?php 
-            $checkProcess = SysProcessRunning::find()->one();
-            $check = $checkProcess->running;
+        <?php
+        $checkProcess = SysProcessRunning::find()->one();
+        $check = $checkProcess->running;
         ?>
 
     </div>
@@ -28,22 +29,35 @@ use backend\models\SysProcessRunning;
 
         <div class="row">
             <div class="col-lg-4">
-                <?php if($check === 'false'){?>
+                <?php if ($check === 'false') { ?>
                     <p><a class="btn btn-lg btn-success" id="btn_data_process" href="#">Data Process</a></p>
-                <?php }else{ ?>
+                <?php } else { ?>
                     <p><a class="btn btn-lg btn-success" href="#">Data Processing...</a></p>
-                <?php }?>
+                <?php } ?>
             </div>
             <div class="col-lg-4">
-                <?php if($check === 'false'){?>
+                <?php if ($check === 'false') { ?>
                     <p><a class="btn btn-lg btn-success" id="btn_report_process" href="#">Report Process</a></p>
-                <?php }else{ ?>
+                <?php } else { ?>
                     <p><a class="btn btn-lg btn-success" href="#">Report Processing...</a></p>
-                <?php }?>
+                <?php } ?>
             </div>
             <div class="col-lg-4">
                 <?php $route_check_process = Yii::$app->UrlManager->createUrl('process/index') ?>
-                <p><a class="btn btn-lg btn-success" href="<?= $route_check_process;?>">Check Process</a></p>
+                <p><a class="btn btn-lg btn-success" href="<?= $route_check_process; ?>">Check Process</a></p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-4">
+                <?php $route_check_process = Yii::$app->UrlManager->createUrl('import-data/index') ?>
+                <p><a class="btn btn-lg btn-success" href="<?= $route_check_process; ?>">Import Data From JHCIS</a></p>
+            </div>
+            <div class="col-lg-4">
+                <p><a class="btn btn-lg btn-success" id="btn_gen_43f_person" href="#">Generator 43F Person</a></p>
+            </div>
+            <div class="col-lg-4">
+                <p><a class="btn btn-lg btn-success" id="btn_gen_43f_all" href="#">Generator 43F All</a></p>
             </div>
         </div>
 
@@ -52,9 +66,10 @@ use backend\models\SysProcessRunning;
 
 
 <?php
-
 $route_data_process = Yii::$app->UrlManager->createUrl('process/processdata');
 $route_report_process = Yii::$app->UrlManager->createUrl('process/processreport');
+$route_gen_43f_person = Yii::$app->UrlManager->createUrl('import-data/generatorperson');
+$route_gen_43f_all = Yii::$app->UrlManager->createUrl('import-data/generatorall');
 
 $script = <<< JS
 $('#btn_data_process').on('click',function(e){
@@ -68,7 +83,7 @@ $('#btn_data_process').on('click',function(e){
     });
 });
 
-$('#btn_report_process').on('click', function(){
+$('#btn_report_process').on('click', function(e){
     $('#resp_report').toggle();
     $.ajax({
         url: '$route_report_process',
@@ -77,11 +92,31 @@ $('#btn_report_process').on('click', function(){
             alert(data+'Completed Report Process')
         }
     });
+});
+
+$('#btn_gen_43f_person').on('click', function(e){
+    $('#resp_report').toggle();
+    $.ajax({
+        url: '$route_gen_43f_person',
+        success: function(data){
+            $('#resp_report').toggle();
+            alert(data+'Completed Generate 43F Person')
+        }
+    });
+});
+
+
+$('#btn_gen_43f_all').on('click', function(e){
+    $('#resp_report').toggle();
+    $.ajax({
+        url: '$route_gen_43f_all',
+        success: function(data){
+            $('#resp_report').toggle();
+            alert(data+'Completed Generate 43F All')
+        }
+    });
 })
 JS;
 
 $this->registerJs($script);
-
-
-
 ?>
